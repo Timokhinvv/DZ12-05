@@ -61,19 +61,8 @@ CREATE INDEX idx_rental_inventory_id ON rental (inventory_id);
 CREATE INDEX idx_inventory_film_id ON inventory (film_id);
 
 Оптимизированный запрос:
------
-SELECT DISTINCT
-CONCAT(c.last_name, ' ', c.first_name),
-SUM(p.amount) OVER (PARTITION BY c.customer_id, f.title)
-FROM
-payment p
-INNER JOIN rental r ON p.rental_id = r.rental_id
-INNER JOIN customer c ON r.customer_id = c.customer_id
-INNER JOIN inventory i ON r.inventory_id = i.inventory_id
-INNER JOIN film f ON i.film_id = f.film_id
-WHERE
-p.payment_date = '2005-07-30'
------
+![2а_Снимок экрана от 2025-04-30 23-47-33](https://github.com/user-attachments/assets/b791ab89-761f-43eb-8868-4d3c97fff7e7)
+
 
 
 ## Дополнительные задания (со звёздочкой*)
