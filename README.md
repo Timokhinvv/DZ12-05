@@ -42,7 +42,38 @@ where date(p.payment_date) = '2005-07-30' and p.payment_date = r.rental_date and
 5 Операции хеш-соединения, которые могут быть медленными для крупных наборов данных.
 6 Последовательные сканирования таблиц inventory и film, чтобы присоединить их к таблице rental, это может быть медленным, если таблицы крупные.
 
+Чтобы оптимизировать запрос, мы можем рассмотреть создание индексов на столбцах payment_date и rental_date, а также оптимизацию порядка соединения и использование более эффективных алгоритмов соединения.
 
+
+Создать индекс на столбец payment_date в таблице payment:
+CREATE INDEX idx_payment_date ON payment (payment_date);
+
+Создать индекс на столбец rental_date в таблице rental:
+CREATE INDEX idx_rental_date ON rental (rental_date);
+
+Создать индекс на столбец customer_id в таблице rental:
+CREATE INDEX idx_rental_customer_id ON rental (customer_id);
+
+Создать индекс на столбец inventory_id в таблице rental:
+CREATE INDEX idx_rental_inventory_id ON rental (inventory_id);
+
+Создать индекс на столбец film_id в таблице inventory:
+CREATE INDEX idx_inventory_film_id ON inventory (film_id);
+
+Оптимизированный запрос:
+-----
+SELECT DISTINCT
+CONCAT(c.last_name, ' ', c.first_name),
+SUM(p.amount) OVER (PARTITION BY c.customer_id, f.title)
+FROM
+payment p
+INNER JOIN rental r ON p.rental_id = r.rental_id
+INNER JOIN customer c ON r.customer_id = c.customer_id
+INNER JOIN inventory i ON r.inventory_id = i.inventory_id
+INNER JOIN film f ON i.film_id = f.film_id
+WHERE
+p.payment_date = '2005-07-30'
+-----
 
 
 ## Дополнительные задания (со звёздочкой*)
